@@ -1,0 +1,15 @@
+[package]
+name = "rsomics-csvio"
+version = "0.1.0"
+description = "Go encoding/csv-exact CSV/TSV I/O for rsomics-tsv-* tools: a byte-faithful record writer and a strict-quote validator matching csvtk's fail-loud parsing."
+edition = "2024"
+rust-version = "1.91"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/omics-rust/rsomics-csvio"
+authors = ["Zane Leong <efd@live.com>"]
+categories = ["parser-implementations", "command-line-utilities", "science"]
+keywords = ["csv", "tsv", "encoding", "csvtk", "quoting"]
+readme = "README.md"
+
+[dependencies]
+rsomics-common = { version = "0.6" }
