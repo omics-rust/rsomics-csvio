@@ -1,6 +1,6 @@
 [package]
 name = "rsomics-csvio"
-version = "0.2.0"
+version = "0.3.0"
 description = "Go encoding/csv-exact CSV/TSV I/O for rsomics-tsv-* tools: a byte-faithful record writer and a strict-quote validator matching csvtk's fail-loud parsing."
 edition = "2024"
 rust-version = "1.91"
@@ -13,3 +13,4 @@ readme = "README.md"
 
 [dependencies]
 rsomics-common = { version = "0.6" }
+csv = "1"

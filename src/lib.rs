@@ -10,8 +10,10 @@
 
 mod newline;
 mod quotes;
+mod reader;
 mod writer;
 
 pub use newline::normalize_crlf;
 pub use quotes::check_strict;
+pub use reader::go_reader_builder;
 pub use writer::CsvWriter;
