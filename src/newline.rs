@@ -2,9 +2,12 @@
 /// normalises all CRLF sequences to LF before returning records — *including
 /// inside quoted multi-line fields*. The Rust `csv` crate preserves `\r\n`
 /// verbatim inside a quoted field, so callers must run this over the raw input
-/// first to stay byte-exact with csvtk. A lone `\r` (old-Mac line ending, or a
-/// stray carriage return inside a field) is left untouched, exactly as Go
-/// leaves it.
+/// first to stay byte-exact with csvtk. A lone `\r` mid-field (an old-Mac line
+/// ending, or a stray carriage return inside a field) is left untouched, exactly
+/// as Go leaves it — except that Go's reader also drops a single `\r` at the
+/// very end of the input when the final line has no trailing `\n` (its
+/// "drop trailing \r before EOF" backwards-compatibility rule), so one trailing
+/// carriage return is popped here too.
 pub fn normalize_crlf(buf: Vec<u8>) -> Vec<u8> {
     if !buf.contains(&b'\r') {
         return buf;
@@ -19,6 +22,9 @@ pub fn normalize_crlf(buf: Vec<u8>) -> Vec<u8> {
             out.push(buf[i]);
             i += 1;
         }
+    }
+    if out.last() == Some(&b'\r') {
+        out.pop();
     }
     out
 }
@@ -47,8 +53,20 @@ mod tests {
     }
 
     #[test]
-    fn trailing_lone_cr_untouched() {
-        assert_eq!(norm(b"ab\r"), b"ab\r");
+    fn trailing_lone_cr_at_eof_stripped() {
+        // Go drops a single trailing \r when the last line has no \n.
+        assert_eq!(norm(b"ab\r"), b"ab");
+    }
+
+    #[test]
+    fn double_trailing_cr_strips_one() {
+        assert_eq!(norm(b"ab\r\r"), b"ab\r");
+    }
+
+    #[test]
+    fn mid_field_cr_before_trailing_cr() {
+        // Only the very last \r is dropped; a mid-field \r survives.
+        assert_eq!(norm(b"a\rb\r"), b"a\rb");
     }
 
     #[test]
